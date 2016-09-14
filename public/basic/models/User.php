@@ -57,15 +57,26 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            $settings = Settings::find()->where(array('id' => 1))->one();
-            if ($settings->defaultStatusUser == 0) {
-                $this->ban = 0;
-            } else {
-                $this->ban = 1;
+            if($this->isNewRecord){
+                $settings = Settings::find()->where(array('id' => 1))->one();
+                if ($settings->defaultStatusUser == 0) {
+                    $this->ban = 0;
+                } else {
+                    $this->ban = 1;
+                }
+                $this->created = time();
+                $this->role = 'user';
+                $this->password = md5('sa1t' . $this->password . '4_pr0tect10n');
+                $this->hash = md5($this->username . $this->created);
+                $message = "Please follow the link for activation http://yii2.loginer/site/confirm?conf={$this->hash}";
+                Yii::$app->mailer->compose()
+                    ->setTo($this->email)
+                    ->setFrom([Yii::$app->params['adminEmail'] => 'noReply'])
+                    ->setSubject('confirm your account')
+                    ->setTextBody($message)
+                    ->send();
             }
-            $this->created = time();
-            $this->role = 'user';
-            $this->password = md5('sa1t' . $this->password . '4_pr0tect10n');
+            
             return true;
         } else {
             return false;
@@ -102,5 +113,16 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         echo '<br><br><br>';
         echo "$text : $this->password";
         return md5('sa1t' . $password . '4_pr0tect10n') === $this->password;
+    }
+    public function activation($hash){
+        $model = $this->find()->where(array('hash' => "$hash"))->one();
+        $flag = false;
+        if($model){
+            $model->load($model->ban = '0',$model->hash = '');
+            if($model->validate() && $model->save()){
+                $flag = true;
+            }
+        }
+        return $flag;
     }
 }

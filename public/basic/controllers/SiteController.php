@@ -6,6 +6,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 use app\models\User;
 use app\models\LoginForm;
 use app\models\ContactForm;
@@ -135,12 +136,12 @@ class SiteController extends Controller
         $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            //return $this->redirect(['view', 'id' => $model->id]);
+            \Yii::$app->session->setFlash('activation', "Please check your e-box for activation email");
         }
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
     /**
      * Updates an existing User model.
@@ -150,7 +151,6 @@ class SiteController extends Controller
      */
     public function actionUpdate($id)
     {
-        $flag = Yii::$app->user->can('updateOwnProfile');
         if (!\Yii::$app->user->can('updateOwnProfile', ['profileId' => $id])) {
             throw new ForbiddenHttpException('Access denied');
         }
@@ -170,18 +170,48 @@ class SiteController extends Controller
      */
     public function actionView($id)
     {
+        if (!\Yii::$app->user->can('updateOwnProfile', ['profileId' => $id])) {
+            throw new ForbiddenHttpException('Access denied');
+        }
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
     }
+    public function actionConfirm(){
+        $model = new User();
+        if(Yii::$app->request->get('conf')){
+            if($model->activation(substr(Yii::$app->request->get('conf'),3))){
+                \Yii::$app->session->setFlash('activation', 
+                    "Your account has been activated, you can " . Html::a('Login', ['/login']) .".");
+            }else{
+                \Yii::$app->session->setFlash('activation', "Somesing goes wrong, please check your activation link.");
+            }
+        } else {
+            \Yii::$app->session->setFlash('activation', "This link is no more active.");
+        }
+        return $this->render('confirm', [
+            'model' => $model,
+        ]);
+    }
+
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            //xdebug_break();
-            if (!\Yii::$app->user->can($action->id)) {
-                throw new ForbiddenHttpException('Access denied');
+            $flag = true;
+            if (!Yii::$app->user->isGuest && !in_array($action->id,array('index','confirm','logout','error'))) {
+                $id = Yii::$app->user->identity->id;
+                $model = $this->findModel($id);
+                if($model->ban == 1){
+                    $flag = false;
+                }
             }
-            return true;
+            if (!\Yii::$app->user->can($action->id)) {
+                $flag = false;
+            }
+            if($flag){
+                return $flag;
+            }
+            throw new ForbiddenHttpException('Access denied');
         } else {
             return false;
         }

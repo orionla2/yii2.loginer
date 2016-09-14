@@ -10,6 +10,11 @@ $this->title = Yii::t('app', 'Create User');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Users'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<?php if(Yii::$app->session->hasFlash('activation')):?>
+    <span class="error_message">
+        <?php echo Yii::$app->session->getFlash('activation'); ?>
+    </span>
+<?php else: ?>
 <div class="user-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -19,3 +24,4 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+<?php endif; ?>

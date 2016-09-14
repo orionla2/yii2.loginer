@@ -24,7 +24,13 @@ return [
     'create' => [
         'type' => 2,
     ],
+    'contact' => [
+        'type' => 2,
+    ],
     'about' => [
+        'type' => 2,
+    ],
+    'confirm' => [
         'type' => 2,
     ],
     'delete' => [
@@ -42,6 +48,8 @@ return [
             'view',
             'create',
             'about',
+            'contact',
+            'confirm',
         ],
     ],
     'user' => [

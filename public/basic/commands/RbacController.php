@@ -28,6 +28,7 @@ class RbacController extends Controller
         $update = $authManager->createPermission('update');
         $create = $authManager->createPermission('create');
         $about = $authManager->createPermission('about');
+        $contact = $authManager->createPermission('contact');
         $delete = $authManager->createPermission('delete');
  
         // Add permissions in Yii::$app->authManager
@@ -39,6 +40,7 @@ class RbacController extends Controller
         $authManager->add($view);
         $authManager->add($update);
         $authManager->add($create);
+        $authManager->add($contact);
         $authManager->add($about);
         $authManager->add($delete);
  
