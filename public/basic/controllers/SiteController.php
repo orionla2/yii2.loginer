@@ -100,33 +100,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
-     *
-     * @return string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
-    /**
      * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -151,7 +124,7 @@ class SiteController extends Controller
      */
     public function actionUpdate($id)
     {
-        if (!\Yii::$app->user->can('updateOwnProfile', ['profileId' => $id])) {
+        if (!\Yii::$app->user->can('updateOwnProfile', ['profileId' => $id, 'action' => Yii::$app->controller->action->id])) {
             throw new ForbiddenHttpException('Access denied');
         }
         $model = $this->findModel($id);
@@ -170,7 +143,7 @@ class SiteController extends Controller
      */
     public function actionView($id)
     {
-        if (!\Yii::$app->user->can('updateOwnProfile', ['profileId' => $id])) {
+        if (!\Yii::$app->user->can('updateOwnProfile', ['profileId' => $id, 'action' => Yii::$app->controller->action->id])) {
             throw new ForbiddenHttpException('Access denied');
         }
         return $this->render('view', [

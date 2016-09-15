@@ -24,12 +24,6 @@ return [
     'create' => [
         'type' => 2,
     ],
-    'contact' => [
-        'type' => 2,
-    ],
-    'about' => [
-        'type' => 2,
-    ],
     'confirm' => [
         'type' => 2,
     ],
@@ -45,10 +39,7 @@ return [
             'error',
             'sign-up',
             'index',
-            'view',
             'create',
-            'about',
-            'contact',
             'confirm',
         ],
     ],
@@ -57,6 +48,7 @@ return [
         'ruleName' => 'userGroup',
         'children' => [
             'update',
+            'view',
             'guest',
             'updateOwnProfile',
         ],
@@ -66,6 +58,7 @@ return [
         'ruleName' => 'userGroup',
         'children' => [
             'update',
+            'view',
             'guest',
             'updateOwnProfile',
         ],

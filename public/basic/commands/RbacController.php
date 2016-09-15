@@ -27,8 +27,7 @@ class RbacController extends Controller
         $view   = $authManager->createPermission('view');
         $update = $authManager->createPermission('update');
         $create = $authManager->createPermission('create');
-        $about = $authManager->createPermission('about');
-        $contact = $authManager->createPermission('contact');
+        $confirm = $authManager->createPermission('confirm');
         $delete = $authManager->createPermission('delete');
  
         // Add permissions in Yii::$app->authManager
@@ -40,8 +39,7 @@ class RbacController extends Controller
         $authManager->add($view);
         $authManager->add($update);
         $authManager->add($create);
-        $authManager->add($contact);
-        $authManager->add($about);
+        $authManager->add($confirm);
         $authManager->add($delete);
  
  
@@ -68,16 +66,17 @@ class RbacController extends Controller
         $authManager->addChild($guest, $error);
         $authManager->addChild($guest, $signUp);
         $authManager->addChild($guest, $index);
-        $authManager->addChild($guest, $view);
         $authManager->addChild($guest, $create);
-        $authManager->addChild($guest, $about);
+        $authManager->addChild($guest, $confirm);
  
         // BRAND
         $authManager->addChild($brand, $update);
+        $authManager->addChild($brand, $view);
         $authManager->addChild($brand, $guest);
  
         // TALENT
         $authManager->addChild($talent, $update);
+        $authManager->addChild($talent, $view);
         $authManager->addChild($talent, $guest);
  
         // Admin

@@ -17,6 +17,10 @@ class UserProfileOwnerRule extends Rule
      */
     public function execute($user, $item, $params)
     {
+        //xdebug_break();
+        if(\Yii::$app->user->isGuest && in_array($params['action'],array('update','view'))){
+            return false;
+        }
         if (\Yii::$app->user->identity->role == 'admin') {
             return true;
         }
