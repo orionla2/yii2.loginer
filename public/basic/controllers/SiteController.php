@@ -106,9 +106,10 @@ class SiteController extends Controller
      */
     public function actionCreate()
     {
+        xdebug_break();
         $model = new User();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $model->load(Yii::$app->request->post());
+        if ($model->validate() && $model->save()) {
             //return $this->redirect(['view', 'id' => $model->id]);
             \Yii::$app->session->setFlash('activation', "Please check your e-box for activation email");
         }
@@ -128,7 +129,8 @@ class SiteController extends Controller
             throw new ForbiddenHttpException('Access denied');
         }
         $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $model->load(Yii::$app->request->post());
+        if ($model->validate() && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
