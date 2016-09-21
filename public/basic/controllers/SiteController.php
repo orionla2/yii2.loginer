@@ -106,7 +106,6 @@ class SiteController extends Controller
      */
     public function actionCreate()
     {
-        xdebug_break();
         $model = new User();
         $model->load(Yii::$app->request->post());
         if ($model->validate() && $model->save()) {
@@ -129,14 +128,20 @@ class SiteController extends Controller
             throw new ForbiddenHttpException('Access denied');
         }
         $model = $this->findModel($id);
-        $model->load(Yii::$app->request->post());
-        if ($model->validate() && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if(Yii::$app->request->post()){
+            $model->load(Yii::$app->request->post());
+            if ($model->validate() && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         }
+        
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
     /**
      * Displays a single User model.
@@ -155,7 +160,7 @@ class SiteController extends Controller
     public function actionConfirm(){
         $model = new User();
         if(Yii::$app->request->get('conf')){
-            if($model->activation(substr(Yii::$app->request->get('conf'),3))){
+            if($model->activation(Yii::$app->request->get('conf'))){
                 \Yii::$app->session->setFlash('activation', 
                     "Your account has been activated, you can " . Html::a('Login', ['/login']) .".");
             }else{
